@@ -1,0 +1,102 @@
+import java.util.*;
+
+class Expense {
+    String date;
+    String category;
+    String description;
+    double amount;
+
+    Expense(String date, String category, String description, double amount) {
+        this.date = date;
+        this.category = category;
+        this.description = description;
+        this.amount = amount;
+    }
+
+    
+    public String toString(){
+        return String.format("Date: %s | Category: %s | Description: %s | Amount: %.2fRs",
+                date, category, description, amount);
+    }
+}
+
+public class ExpenseTracker {
+    private static final List<Expense> expenses = new ArrayList<>();
+    private static final Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\n_______Expense Tracker_______");
+            System.out.println("1. Add Expense");
+            System.out.println("2. View All Expenses");
+            System.out.println("3. Generate Report");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
+
+            int ch = sc.nextInt();
+            sc.nextLine();
+
+            switch (ch) {
+                case 1:
+                    addExpense();
+                    break;
+                case 2:
+                    viewExpenses();
+                    break;
+                case 3:
+                    generateReport();
+                    break;
+                case 4:
+                    System.out.println("Adios!");
+                    return;
+                default:
+                    System.out.println("\nInvalid option Give proper input:)");
+            }
+        }
+    }
+
+    private static void addExpense() {
+        System.out.print("Enter date (YYYY-MM-DD): ");
+        String date = sc.nextLine();
+
+        System.out.print("Enter category (e.g. Food, Travel): ");
+        String category = sc.nextLine();
+
+        System.out.print("Enter description: ");
+        String description = sc.nextLine();
+
+        System.out.print("Enter amount: ");
+        double amount;
+        try {
+            amount = Double.parseDouble(sc.nextLine());
+            } 
+        catch (NumberFormatException e) {
+            System.out.println("Invalid amount.");
+            return;
+        }
+
+        expenses.add(new Expense(date, category, description, amount));
+        System.out.println("Expense added successfully.");
+    }
+
+    private static void viewExpenses() {
+        if (expenses.isEmpty()) {
+            System.out.println("No expenses found:(");
+            return;
+        }
+
+        System.out.println("\n______Expense List______");
+        for (Expense expense : expenses) {
+            System.out.println(expense);
+        }
+    }
+
+    private static void generateReport() {
+        double total = 0;
+        System.out.println("\n______Expense Report______");
+        for (Expense e : expenses) {
+            total += e.amount;
+        }
+        System.out.printf("Total expenses: %.2fRs\n", total);
+    }
+}
