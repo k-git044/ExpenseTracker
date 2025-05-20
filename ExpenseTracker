@@ -13,10 +13,10 @@ class Expense {
         this.amount = amount;
     }
 
-    
-    public String toString(){
-        return String.format("Date: %s | Category: %s | Description: %s | Amount: %.2fRs",
-                date, category, description, amount);
+    @Override
+    public String toString() {
+        return String.format("Date: %-15s | Category: %-10s | Description: %-20s | Amount: %.2f Rs", 
+                             date, category, description, amount);
     }
 }
 
@@ -34,7 +34,7 @@ public class ExpenseTracker {
             System.out.print("Choose an option: ");
 
             int ch = sc.nextInt();
-            sc.nextLine();
+            sc.nextLine(); // Consume newline character
 
             switch (ch) {
                 case 1:
@@ -50,7 +50,7 @@ public class ExpenseTracker {
                     System.out.println("Adios!");
                     return;
                 default:
-                    System.out.println("\nInvalid option Give proper input:)");
+                    System.out.println("\nInvalid option. Please choose a valid option.");
             }
         }
     }
@@ -59,33 +59,50 @@ public class ExpenseTracker {
         System.out.print("Enter date (YYYY-MM-DD): ");
         String date = sc.nextLine();
 
-        System.out.print("Enter category (e.g. Food, Travel): ");
-        String category = sc.nextLine();
+        String category;
+        while (true) {
+            System.out.print("Enter category (Food, Travel, Shopping): ");
+            category = sc.nextLine();
+            if (isValidCategory(category)) {
+                break;
+            } else {
+                System.out.println("Invalid category. Please choose from Food, Travel, or Shopping.");
+            }
+        }
 
         System.out.print("Enter description: ");
         String description = sc.nextLine();
 
-        System.out.print("Enter amount: ");
         double amount;
-        try {
-            amount = Double.parseDouble(sc.nextLine());
-            } 
-        catch (NumberFormatException e) {
-            System.out.println("Invalid amount.");
-            return;
+        while (true) {
+            System.out.print("Enter amount: ");
+            try {
+                amount = Double.parseDouble(sc.nextLine());
+                if (amount <= 0) {
+                    System.out.println("Amount must be greater than 0.");
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid amount. Please enter a valid number.");
+            }
         }
 
         expenses.add(new Expense(date, category, description, amount));
-        System.out.println("Expense added successfully.");
+        System.out.println("\nExpense added successfully.");
     }
 
     private static void viewExpenses() {
         if (expenses.isEmpty()) {
-            System.out.println("No expenses found:(");
+            System.out.println("\nNo expenses found.");
             return;
         }
 
         System.out.println("\n______Expense List______");
+        System.out.println("---------------------------------------------------------");
+        System.out.printf("%-15s %-10s %-20s %-15s\n", "Date", "Category", "Description", "Amount");
+        System.out.println("---------------------------------------------------------");
+
         for (Expense expense : expenses) {
             System.out.println(expense);
         }
@@ -93,10 +110,34 @@ public class ExpenseTracker {
 
     private static void generateReport() {
         double total = 0;
-        System.out.println("\n______Expense Report______");
+        double foodTotal = 0, travelTotal = 0, shoppingTotal = 0;
+
         for (Expense e : expenses) {
             total += e.amount;
+
+            switch (e.category.toLowerCase()) {
+                case "food":
+                    foodTotal += e.amount;
+                    break;
+                case "travel":
+                    travelTotal += e.amount;
+                    break;
+                case "shopping":
+                    shoppingTotal += e.amount;
+                    break;
+            }
         }
-        System.out.printf("Total expenses: %.2fRs\n", total);
+
+        System.out.println("\n______Expense Report______");
+        System.out.println("---------------------------------------------------------");
+        System.out.printf("%-15s %-10s\n", "Total Expenses", total + " Rs");
+        System.out.printf("%-15s %-10s\n", "Food", foodTotal + " Rs");
+        System.out.printf("%-15s %-10s\n", "Travel", travelTotal + " Rs");
+        System.out.printf("%-15s %-10s\n", "Shopping", shoppingTotal + " Rs");
+        System.out.println("---------------------------------------------------------");
+    }
+
+    private static boolean isValidCategory(String category) {
+        return category.equalsIgnoreCase("Food") || category.equalsIgnoreCase("Travel") || category.equalsIgnoreCase("Shopping");
     }
 }
